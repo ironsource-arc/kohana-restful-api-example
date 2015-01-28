@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php
+
+defined('SYSPATH') or die('No direct access allowed.');
 
 /**
  * An example REST model
@@ -7,109 +9,95 @@
  * @category Model
  * @author   Alon Pe'er
  */
-class Model_Restexample extends Model_RestAPI {
+class Model_Restexample extends Model_RestAPI
+{
 
-	public function get($params)
-	{
-		// Process the request and fetch objects.
+    /**
+     * @param $params
+     * @return array
+     */
+    public function get($params)
+    {
+        // Process the request and fetch objects.
+        // Returning a mock object.
+        return [
+            'restexample' => [
+                ['id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)],
+                ['id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)],
+                ['id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)],
+                ['id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)],
+            ],
+        ];
+    }
 
-		// Returning a mock object.
-		return array(
-			'restexample' => array(
-				array('id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)),
-				array('id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)),
-				array('id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)),
-				array('id' => mt_rand(1, 100), 'name' => Text::random('alnum', 10)),
-			),
-		);
-	}
+    /**
+     * @param $params
+     * @return array
+     * @throws HTTP_Exception
+     */
+    public function create($params)
+    {
+        // Enforce and validate some parameters.
+        if (!isset($params['name'])) {
+            throw HTTP_Exception::factory(400, 'Missing name');
+        }
 
-	public function create($params)
-	{
-		// Enforce and validate some parameters.
-		if (!isset($params['name']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('Missing name'),
-				'field' => 'name',
-			));
-		}
+        if (!Valid::min_length($params['name'], 2) || !Valid::alpha_numeric($params['name'])) {
+            throw HTTP_Exception::factory(400,
+                                          'The name must contain at least 2 characters and have alpha-numeric characters only'
+            );
+        }
 
-		if (!Valid::min_length($params['name'], 2) || !Valid::alpha_numeric($params['name']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('The name must contain at least 2 characters and have alpha-numeric characters only'),
-				'field' => 'name',
-			));
-		}
+        // Process the request and create a new object.
+        // Returning a mock object.
+        return ['id' => mt_rand(1, 100), 'name' => $params['name']];
+    }
 
-		// Process the request and create a new object.
+    /**
+     * @param $params
+     * @return array
+     * @throws HTTP_Exception
+     */
+    public function update($params)
+    {
+        // Enforce and validate some parameters.
+        if (!isset($params['id'])) {
+            throw HTTP_Exception::factory(400, 'Missing id');
+        }
+        if (!Valid::numeric($params['id'])) {
+            throw HTTP_Exception::factory(400, 'Invalid id');
+        }
 
-		// Returning a mock object.
-		return array(
-			'restexample' => array('id' => mt_rand(1, 100), 'name' => $params['name']),
-		);
-	}
+        if (isset($params['name']) && (!Valid::min_length($params['name'], 2) || !Valid::alpha_numeric($params['name']))) {
+            throw HTTP_Exception::factory(400, 'The name must contain at least 2 characters and have alpha-numeric characters only');
+        }
 
-	public function update($params)
-	{
-		// Enforce and validate some parameters.
-		if (!isset($params['id']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('Missing id'),
-				'field' => 'id',
-			));
-		}
-		if (!Valid::numeric($params['id']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('Invalid id'),
-				'field' => 'id',
-			));
-		}
+        // Process the request and update object.
+        // Returning a mock object.
+        return ['id' => $params['id'], 'name' => isset($params['name']) ? $params['name'] : Text::random('alnum', 10)];
+    }
 
-		if (isset($params['name']) && (!Valid::min_length($params['name'], 2) || !Valid::alpha_numeric($params['name'])))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('The name must contain at least 2 characters and have alpha-numeric characters only'),
-				'field' => 'name',
-			));
-		}
+    /**
+     * @param $params
+     * @return array
+     * @throws HTTP_Exception
+     */
+    public function delete($params)
+    {
+        // Enforce and validate some parameters.
+        if (!isset($params['id'])) {
+            throw HTTP_Exception::factory(400, 'Missing id');
+        }
+        if (!Valid::numeric($params['id'])) {
+            throw HTTP_Exception::factory(400, 'Invalid id');
+        }
 
-		// Process the request and update object.
+        // Process the request and delete object.
 
-		// Returning a mock object.
-		return array(
-			'restexample' => array('id' => $params['id'], 'name' => isset($params['name']) ? $params['name'] : Text::random('alnum', 10)),
-		);
-	}
+        return [
+            'status' => __('Deleted'),
+            'id'     => $params['id'],
+        ];
+    }
 
-	public function delete($params)
-	{
-		// Enforce and validate some parameters.
-		if (!isset($params['id']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('Missing id'),
-				'field' => 'id',
-			));
-		}
-		if (!Valid::numeric($params['id']))
-		{
-			throw HTTP_Exception::factory(400, array(
-				'error' => __('Invalid id'),
-				'field' => 'id',
-			));
-		}
-
-		// Process the request and delete object.
-
-		return array(
-			'status' => __('Deleted'),
-			'id'     => $params['id'],
-		);
-
-	}
-
-} // END
+}
